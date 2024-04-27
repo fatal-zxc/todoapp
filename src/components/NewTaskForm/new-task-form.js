@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 
 import './new-task-form.css'
 
@@ -6,6 +7,10 @@ export default class NewTaskForm extends Component  {
 
     state = {
         text: ''
+    }
+
+    static propTypes = {
+        addTask: PropTypes.func
     }
 
     changeText = (e) => {
@@ -16,6 +21,7 @@ export default class NewTaskForm extends Component  {
 
     submitTask = (e) => {
         e.preventDefault()
+        if(this.state.text.trim() === '') return
         this.props.addTask(this.state.text)
         this.setState({
             text: ''

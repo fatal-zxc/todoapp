@@ -30,7 +30,7 @@ class App extends Component {
         const newTask = {
             description: text,
             done: false,
-            time: 'created 5 minutes ago',
+            time: Date.now(),
             hidden: false,
             id: this.idCounter++
         }
@@ -49,6 +49,12 @@ class App extends Component {
                 data: [...data.slice(0, idx), newTask, ...data.slice(idx + 1)]
             }
         })
+        if(this.state.mode === 'active') {
+            this.filterActive()
+        }
+        if(this.state.mode === 'completed') {
+            this.filterCompleted()
+        }
     }
 
     filterAll = () => {
@@ -63,7 +69,8 @@ class App extends Component {
     }
 
     filterActive = () => {
-        this.setState(({data, mode}) => {
+        this.filterAll()
+        this.setState(({data}) => {
             const newData = []
             data.forEach((el) => {
                 if(el.done) {
@@ -80,6 +87,35 @@ class App extends Component {
         })
     }
 
+    filterCompleted = () => {
+        this.filterAll()
+        this.setState(({data}) => {
+            const newData = []
+            data.forEach((el) => {
+                if(!el.done) {
+                    newData.push({...el, hidden: true})
+                }
+                else {
+                    newData.push({...el})
+                }
+            })
+            return {
+                data: newData,
+                mode: 'completed'
+            }
+        })
+    }
+
+    clearCompleted = () => {
+        this.setState(({data}) => {
+            data.forEach((task) => {
+                if(task.done) {
+                    this.deleteTask(task.id)
+                }  
+            })
+        })
+    }
+
     render() { 
 
         const {data} = this.state
@@ -93,7 +129,7 @@ class App extends Component {
             </header>
             <section className="main">
                 <TaskList todos={data} deleteTask={this.deleteTask} toggleDone={this.toggleDone}/>
-                <Footer todoCount={todoCount} filterAll={this.filterAll} filterActive={this.filterActive}/>
+                <Footer todoCount={todoCount} filterAll={this.filterAll} filterActive={this.filterActive} filterCompleted={this.filterCompleted} clearCompleted={this.clearCompleted}/>
             </section>
         </section>
         )

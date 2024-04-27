@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 
 import './task-filter.css'
 
@@ -8,6 +9,12 @@ export default class TaskFilter extends Component {
         all: 'selected',
         active: '',
         completed: ''
+    }
+
+    static propTypes = {
+        filterAll: PropTypes.func,
+        filterActive: PropTypes.func,
+        filterCompleted: PropTypes.func
     }
 
     filterAllWrap = () => {
@@ -32,6 +39,17 @@ export default class TaskFilter extends Component {
         this.props.filterActive()
     }
 
+    filterCompletedWrap = () => {
+        this.setState(() => {
+            return {
+                all: '',
+                active: '',
+                completed: 'selected'
+            }
+        })
+        this.props.filterCompleted()
+    }
+
     render() {
         return (
             <ul className="filters">
@@ -42,7 +60,7 @@ export default class TaskFilter extends Component {
                     <button className={this.state.active} onClick={this.filterActiveWrap}>Active</button>
                 </li>
                 <li>
-                    <button className={this.state.completed} >Completed</button>
+                    <button className={this.state.completed} onClick={this.filterCompletedWrap}>Completed</button>
                 </li>
             </ul>
         )
