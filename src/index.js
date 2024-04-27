@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Component} from "react";
 import ReactDOM from 'react-dom/client'
 
 import './index.css'
@@ -6,25 +6,98 @@ import Footer from './components/Footer'
 import TaskList from './components/TaskList'
 import NewTaskForm from './components/NewTaskForm'
 
-const App = () => {
-    const data = [
-        {status: 'completed', description: 'Completed task', time: 'created 17 seconds ago', id: 0},
-        {status: 'editing', description: 'Editing task', time: 'created 5 minutes ago', id: 1},
-        {description: 'Active task', time: 'created 5 minutes ago', id: 2},
-    ]
+class App extends Component {
 
-    return (
+    idCounter = 0
+
+    state = {
+        data: [
+            // {description: 'Active task', done: false, time: 'created 5 minutes ago', hidden: false, id: 1}
+        ],
+        mode: 'all'
+    }
+
+    deleteTask = (id) => {
+        this.setState(({data}) => {
+            const idx = data.findIndex((el) => el.id === id)
+            return {
+                data: [...data.slice(0, idx), ...data.slice(idx + 1)]
+            }
+        })
+    }
+
+    addTask = (text) => {
+        const newTask = {
+            description: text,
+            done: false,
+            time: 'created 5 minutes ago',
+            hidden: false,
+            id: this.idCounter++
+        }
+        this.setState(({data}) => {
+            return {
+                data: [...data, newTask]
+            }
+        })
+    }
+
+    toggleDone = (id) => {
+        this.setState(({data}) => {
+            const idx = data.findIndex((el) => el.id === id)
+            const newTask = {...data[idx], done: !data[idx].done}
+            return { 
+                data: [...data.slice(0, idx), newTask, ...data.slice(idx + 1)]
+            }
+        })
+    }
+
+    filterAll = () => {
+        this.setState(({data, mode}) => {
+            const newData = []
+            data.forEach((el) => newData.push({...el, hidden: false}))
+            return {
+                data: newData,
+                mode: 'all'
+            }
+        })
+    }
+
+    filterActive = () => {
+        this.setState(({data, mode}) => {
+            const newData = []
+            data.forEach((el) => {
+                if(el.done) {
+                    newData.push({...el, hidden: true})
+                }
+                else {
+                    newData.push({...el})
+                }
+            })
+            return {
+                data: newData,
+                mode: 'active'
+            }
+        })
+    }
+
+    render() { 
+
+        const {data} = this.state
+        const todoCount = data.filter((el) => !el.done).length
+
+        return (
         <section className="todoapp">
             <header className="header">
                 <h1>todos</h1>
-                <NewTaskForm />
+                <NewTaskForm addTask={this.addTask}/>
             </header>
             <section className="main">
-                <TaskList todos={data}/>
-                <Footer />
+                <TaskList todos={data} deleteTask={this.deleteTask} toggleDone={this.toggleDone}/>
+                <Footer todoCount={todoCount} filterAll={this.filterAll} filterActive={this.filterActive}/>
             </section>
         </section>
-    )
+        )
+    }
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

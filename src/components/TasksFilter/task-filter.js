@@ -1,21 +1,50 @@
-import React from 'react'
+import React, {Component} from 'react'
 
 import './task-filter.css'
 
-const TaskFilter = () => {
-    return (
-        <ul className="filters">
-            <li>
-                <button className="selected">All</button>
-            </li>
-            <li>
-                <button>Active</button>
-            </li>
-            <li>
-                <button>Completed</button>
-            </li>
-        </ul>
-    )
-}
+export default class TaskFilter extends Component {
 
-export default TaskFilter
+    state = {
+        all: 'selected',
+        active: '',
+        completed: ''
+    }
+
+    filterAllWrap = () => {
+        this.setState(() => {
+            return {
+                all: 'selected',
+                active: '',
+                completed: ''
+            }
+        })
+        this.props.filterAll()
+    }
+
+    filterActiveWrap = () => {
+        this.setState(() => {
+            return {
+                all: '',
+                active: 'selected',
+                completed: ''
+            }
+        })
+        this.props.filterActive()
+    }
+
+    render() {
+        return (
+            <ul className="filters">
+                <li>
+                    <button className={this.state.all} onClick={this.filterAllWrap}>All</button>
+                </li>
+                <li>
+                    <button className={this.state.active} onClick={this.filterActiveWrap}>Active</button>
+                </li>
+                <li>
+                    <button className={this.state.completed} >Completed</button>
+                </li>
+            </ul>
+        )
+    }
+}

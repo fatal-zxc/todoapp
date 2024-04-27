@@ -3,15 +3,12 @@ import React from 'react'
 import Task from '../Task'
 import './task-list.css'
 
-const TaskList = ({ todos }) => {
+const TaskList = ({ todos, deleteTask, toggleDone}) => {
 
     const tasks = todos.map((taskData) => {
-        const {id, status, ...data} = taskData
+        const {id, ...data} = taskData
         return (
-        <li className={status} key={id}>
-            <Task {...data}/>
-            {status === 'editing' ? <input type="text" className="edit" defaultValue={taskData.description} /> : null}
-        </li>
+            <Task {...data} key={id} deleteTask={() => deleteTask(id)} toggleDone={() => toggleDone(id)}/>
         )
     })
 
