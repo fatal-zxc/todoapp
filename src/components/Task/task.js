@@ -13,23 +13,40 @@ export default class Task extends Component   {
     }
 
     static propTypes = {
-        time: PropTypes.object,
+        time: PropTypes.number,
         description: PropTypes.string,
         done: PropTypes.bool,
         hidden: PropTypes.bool,
         deleteTask: PropTypes.func,
-        toggleDone: PropTypes.func
+        toggleDone: PropTypes.func,
+        editTask: PropTypes.func
     }
 
     state = {
-        edit: false
+        edit: false,
+        text: ''
     }
 
     editClick = () => {
-        this.setState(({edit}) => {
-            return {
-                edit: !edit
-            }
+        this.setState({
+            edit: true,
+            text: this.props.description
+        })
+    }
+
+    editChange = (e) => {
+        this.setState({
+            text: e.target.value
+        })
+    }
+
+    editTaskWrap = (e) => {
+        e.preventDefault()
+        if(this.state.text.trim() === '') return
+        this.props.editTask(this.props.id, this.state.text)
+        this.setState({
+            edit: false,
+            text: ''
         })
     }
 
@@ -53,7 +70,7 @@ export default class Task extends Component   {
         return (
         <li className={status}>
             <div className='view'>
-                <input className="toggle" type="checkbox" onChange={toggleDone}/>
+                <input className="toggle" type="checkbox" onChange={toggleDone} checked={done}/>
                 <label onClick={toggleDone}>
                     <span className="description">{description}</span>
                     <span className="created">{formatDistanceToNow(time)}</span>
@@ -61,7 +78,7 @@ export default class Task extends Component   {
                 <button className="icon icon-edit" onClick={this.editClick}></button>
                 <button className="icon icon-destroy" onClick={deleteTask}></button>
             </div>
-            {status === 'editing' ? <input type="text" className="edit" defaultValue={description} /> : null}
+            {status === 'editing' ? <form onSubmit={this.editTaskWrap}><input type="text" className="edit" onChange={this.editChange} value={this.state.text} /></form> : null}
         </li>
         )
     }

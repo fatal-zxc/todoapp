@@ -14,6 +14,10 @@ const Footer = ({todoCount, filterAll, filterActive, filterCompleted, clearCompl
     )
 }
 
+Footer.defaultProps = {
+    todoCount: 0
+}
+
 Footer.propTypes = {
     todoCount: PropTypes.number,
     filterAll: PropTypes.func,

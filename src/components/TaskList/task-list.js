@@ -4,12 +4,11 @@ import PropTypes from 'prop-types'
 import Task from '../Task'
 import './task-list.css'
 
-const TaskList = ({ todos, deleteTask, toggleDone}) => {
+const TaskList = ({ todos, deleteTask, toggleDone, editTask}) => {
 
     const tasks = todos.map((taskData) => {
-        const {id, ...data} = taskData
         return (
-            <Task {...data} key={id} deleteTask={() => deleteTask(id)} toggleDone={() => toggleDone(id)}/>
+            <Task {...taskData} key={taskData.id} deleteTask={() => deleteTask(taskData.id)} toggleDone={() => toggleDone(taskData.id)} editTask={editTask}/>
         )
     })
 
@@ -21,9 +20,10 @@ const TaskList = ({ todos, deleteTask, toggleDone}) => {
 }
 
 TaskList.propTypes = {
-    todos: PropTypes.arrayOf(PropTypes.object),
+    todos: PropTypes.arrayOf(PropTypes.object).isRequired,
     deleteTask: PropTypes.func,
-    toggleDone: PropTypes.func
+    toggleDone: PropTypes.func,
+    editTask: PropTypes.func
 }
 
 export default TaskList

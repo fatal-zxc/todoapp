@@ -41,6 +41,16 @@ class App extends Component {
         })
     }
 
+    editTask = (id, text) => {
+        this.setState(({data}) => {
+            const idx = data.findIndex((el) => el.id === id)
+            const newTask = {...data[idx], description: text}
+            return {
+                data: [...data.slice(0, idx), newTask, ...data.slice(idx + 1)]
+            }
+        })
+    }
+
     toggleDone = (id) => {
         this.setState(({data}) => {
             const idx = data.findIndex((el) => el.id === id)
@@ -128,7 +138,7 @@ class App extends Component {
                 <NewTaskForm addTask={this.addTask}/>
             </header>
             <section className="main">
-                <TaskList todos={data} deleteTask={this.deleteTask} toggleDone={this.toggleDone}/>
+                <TaskList todos={data} deleteTask={this.deleteTask} toggleDone={this.toggleDone} editTask={this.editTask}/>
                 <Footer todoCount={todoCount} filterAll={this.filterAll} filterActive={this.filterActive} filterCompleted={this.filterCompleted} clearCompleted={this.clearCompleted}/>
             </section>
         </section>
