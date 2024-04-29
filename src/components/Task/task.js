@@ -14,7 +14,7 @@ export default class Task extends Component {
     }
 
     this.editClick = () => {
-      const { description } = this.state
+      const { description } = this.props
       this.setState({
         edit: true,
         text: description,

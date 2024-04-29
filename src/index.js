@@ -33,8 +33,9 @@ class App extends Component {
           done: false,
           time: Date.now(),
           hidden: false,
-          id: this.idCounter + 1,
+          id: this.idCounter,
         }
+        this.idCounter += 1
         return {
           data: [...data, newTask],
         }
@@ -116,12 +117,11 @@ class App extends Component {
     }
 
     this.clearCompleted = () => {
-      this.setState(({ data }) => {
-        data.forEach((task) => {
-          if (task.done) {
-            this.deleteTask(task.id)
-          }
-        })
+      const { data } = this.state
+      data.forEach((task) => {
+        if (task.done) {
+          this.deleteTask(task.id)
+        }
       })
     }
   }

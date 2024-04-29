@@ -7,10 +7,7 @@ function Footer(props) {
   const { todoCount, filterAll, filterActive, filterCompleted, clearCompleted } = props
   return (
     <footer className="footer">
-      <span className="todo-count">
-        {todoCount}
-        items left
-      </span>
+      <span className="todo-count">{todoCount} items left</span>
       <TaskFilter
         filterActive={filterActive}
         filterAll={filterAll}

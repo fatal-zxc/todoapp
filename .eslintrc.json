@@ -28,6 +28,7 @@
       "semi": ["error", "never"],
       "object-curly-newline": ["error", {"ObjectPattern": "never"}],
       "react/react-in-jsx-scope": "off",
+      "react/jsx-one-expression-per-line": "off",
       "react/prop-types": 0,
       "import/no-unresolved": [2, { "caseSensitive": false }],
       "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
