@@ -11,9 +11,7 @@ class App extends Component {
     super()
 
     this.state = {
-      data: [
-        // {description: 'Active task', done: false, time: 'created 5 minutes ago', hidden: false, id: 1}
-      ],
+      data: [],
       mode: 'all',
     }
 
