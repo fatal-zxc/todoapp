@@ -14,60 +14,76 @@ export default class TaskFilter extends Component {
     }
 
     this.filterAllWrap = () => {
-      this.setState(() => {
-        return {
-          all: 'selected',
-          active: '',
-          completed: '',
-        }
+      this.setState({
+        all: 'selected',
+        active: '',
+        completed: '',
       })
-      this.props.filterAll()
+      const { filterAll } = this.props
+      filterAll()
     }
 
     this.filterActiveWrap = () => {
-      this.setState(() => {
-        return {
-          all: '',
-          active: 'selected',
-          completed: '',
-        }
+      this.setState({
+        all: '',
+        active: 'selected',
+        completed: '',
       })
-      this.props.filterActive()
+      const { filterActive } = this.props
+      filterActive()
     }
 
     this.filterCompletedWrap = () => {
-      this.setState(() => {
-        return {
-          all: '',
-          active: '',
-          completed: 'selected',
-        }
+      this.setState({
+        all: '',
+        active: '',
+        completed: 'selected',
       })
-      this.props.filterCompleted()
+      const { filterCompleted } = this.props
+      filterCompleted()
     }
   }
 
   render() {
+    const { all, active, completed } = this.state
     return (
       <ul className="filters">
         <li>
-          <button className={this.state.all} onClick={this.filterAllWrap}>
+          <button
+            type="button"
+            className={all}
+            onClick={this.filterAllWrap}
+          >
             All
           </button>
         </li>
         <li>
-          <button className={this.state.active} onClick={this.filterActiveWrap}>
+          <button
+            type="button"
+            className={active}
+            onClick={this.filterActiveWrap}
+          >
             Active
           </button>
         </li>
         <li>
-          <button className={this.state.completed} onClick={this.filterCompletedWrap}>
+          <button
+            type="button"
+            className={completed}
+            onClick={this.filterCompletedWrap}
+          >
             Completed
           </button>
         </li>
       </ul>
     )
   }
+}
+
+TaskFilter.defaultProps = {
+  filterAll: () => {},
+  filterActive: () => {},
+  filterCompleted: () => {},
 }
 
 TaskFilter.propTypes = {

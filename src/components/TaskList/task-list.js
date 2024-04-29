@@ -3,24 +3,33 @@ import PropTypes from 'prop-types'
 import Task from '../Task'
 import './task-list.css'
 
-const TaskList = ({ todos, deleteTask, toggleDone, editTask }) => {
-  const tasks = todos.map((taskData) => {
-    return (
-      <Task
-        {...taskData}
-        key={taskData.id}
-        deleteTask={() => deleteTask(taskData.id)}
-        toggleDone={() => toggleDone(taskData.id)}
-        editTask={editTask}
-      />
-    )
-  })
+function TaskList(props) {
+  const { todos, deleteTask, toggleDone, editTask } = props
+  const tasks = todos.map((taskData) => (
+    <Task
+      description={taskData.description}
+      done={taskData.done}
+      time={taskData.time}
+      hidden={taskData.hidden}
+      id={taskData.id}
+      key={taskData.id}
+      deleteTask={() => deleteTask(taskData.id)}
+      toggleDone={() => toggleDone(taskData.id)}
+      editTask={editTask}
+    />
+  ))
 
   return <ul className="todo-list">{tasks}</ul>
 }
 
+TaskList.defaultProps = {
+  deleteTask: () => {},
+  toggleDone: () => {},
+  editTask: () => {},
+}
+
 TaskList.propTypes = {
-  todos: PropTypes.arrayOf(PropTypes.object).isRequired,
+  todos: PropTypes.arrayOf(PropTypes.objectOf).isRequired,
   deleteTask: PropTypes.func,
   toggleDone: PropTypes.func,
   editTask: PropTypes.func,

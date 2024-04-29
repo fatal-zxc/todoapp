@@ -6,9 +6,9 @@
     "ignorePatterns": ["node_modules", "dist", "build"],
     "extends": [
       "eslint:recommended",
+      "airbnb",
       "plugin:react/recommended",
       "plugin:react/jsx-runtime",
-      "plugin:prettier/recommended",
       "plugin:import/errors",
       "plugin:import/warnings"
     ],
@@ -20,16 +20,13 @@
       "ecmaVersion": 12,
       "sourceType": "module"
     },
-    "plugins": ["react", "prettier", "import"],
+    "plugins": ["react", "import"],
     "rules": {
       "indent": ["error", 2],
-      "prettier/prettier": ["error",
-      {
-        "endOfLine": "auto"
-      }],
       "linebreak-style": [0, "unix"],
       "quotes": ["error", "single"],
       "semi": ["error", "never"],
+      "object-curly-newline": ["error", {"ObjectPattern": "never"}],
       "react/react-in-jsx-scope": "off",
       "react/prop-types": 0,
       "import/no-unresolved": [2, { "caseSensitive": false }],

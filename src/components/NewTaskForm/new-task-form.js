@@ -19,8 +19,10 @@ export default class NewTaskForm extends Component {
 
     this.submitTask = (e) => {
       e.preventDefault()
-      if (this.state.text.trim() === '') return
-      this.props.addTask(this.state.text)
+      const { text } = this.state
+      const { addTask } = this.props
+      if (text.trim() === '') return
+      addTask(text)
       this.setState({
         text: '',
       })
@@ -28,18 +30,22 @@ export default class NewTaskForm extends Component {
   }
 
   render() {
+    const { text } = this.state
     return (
       <form onSubmit={this.submitTask}>
         <input
           className="new-todo"
           placeholder="What needs to be done?"
-          value={this.state.text}
+          value={text}
           onChange={this.changeText}
-          autoFocus
         />
       </form>
     )
   }
+}
+
+NewTaskForm.defaultProps = {
+  addTask: () => {},
 }
 
 NewTaskForm.propTypes = {

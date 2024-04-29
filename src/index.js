@@ -27,14 +27,14 @@ class App extends Component {
     }
 
     this.addTask = (text) => {
-      const newTask = {
-        description: text,
-        done: false,
-        time: Date.now(),
-        hidden: false,
-        id: this.idCounter++,
-      }
       this.setState(({ data }) => {
+        const newTask = {
+          description: text,
+          done: false,
+          time: Date.now(),
+          hidden: false,
+          id: this.idCounter + 1,
+        }
         return {
           data: [...data, newTask],
         }
@@ -52,6 +52,7 @@ class App extends Component {
     }
 
     this.toggleDone = (id) => {
+      const { mode } = this.state
       this.setState(({ data }) => {
         const idx = data.findIndex((el) => el.id === id)
         const newTask = { ...data[idx], done: !data[idx].done }
@@ -59,10 +60,10 @@ class App extends Component {
           data: [...data.slice(0, idx), newTask, ...data.slice(idx + 1)],
         }
       })
-      if (this.state.mode === 'active') {
+      if (mode === 'active') {
         this.filterActive()
       }
-      if (this.state.mode === 'completed') {
+      if (mode === 'completed') {
         this.filterCompleted()
       }
     }
@@ -136,7 +137,12 @@ class App extends Component {
           <NewTaskForm addTask={this.addTask} />
         </header>
         <section className="main">
-          <TaskList todos={data} deleteTask={this.deleteTask} toggleDone={this.toggleDone} editTask={this.editTask} />
+          <TaskList
+            todos={data}
+            deleteTask={this.deleteTask}
+            toggleDone={this.toggleDone}
+            editTask={this.editTask}
+          />
           <Footer
             todoCount={todoCount}
             filterAll={this.filterAll}
