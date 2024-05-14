@@ -9,6 +9,8 @@ export default class NewTaskForm extends Component {
 
     this.state = {
       text: '',
+      min: 0,
+      sec: 0,
     }
 
     this.changeText = (e) => {
@@ -17,27 +19,71 @@ export default class NewTaskForm extends Component {
       })
     }
 
+    this.changeMin = (e) => {
+      if (Number.isNaN(Number(e.target.value)) || Number(e.target.value) >= 100) return
+      this.setState({
+        min: Number(e.target.value),
+      })
+    }
+
+    this.changeSec = (e) => {
+      if (Number.isNaN(Number(e.target.value)) || Number(e.target.value) >= 100) return
+      this.setState({
+        sec: Number(e.target.value),
+      })
+    }
+
+    this.keyDown = (e) => {
+      if (e.key === 'Enter') {
+        this.submitTask(e)
+      }
+    }
+
     this.submitTask = (e) => {
       e.preventDefault()
-      const { text } = this.state
+      const { text, min, sec } = this.state
       const { addTask } = this.props
+      const timer = min * 60 + sec
       if (text.trim() === '') return
-      addTask(text)
+      addTask(text, timer)
       this.setState({
         text: '',
+        min: 0,
+        sec: 0,
       })
     }
   }
 
   render() {
-    const { text } = this.state
+    const { text, min, sec } = this.state
     return (
-      <form onSubmit={this.submitTask}>
+      <form
+        className="new-todo-form"
+        onSubmit={this.submitTask}
+      >
         <input
+          type="text"
           className="new-todo"
-          placeholder="What needs to be done?"
+          placeholder="Task"
           value={text}
           onChange={this.changeText}
+          onKeyDown={this.keyDown}
+        />
+        <input
+          type="text"
+          className="new-todo-form__timer"
+          placeholder="Min"
+          value={min}
+          onChange={this.changeMin}
+          onKeyDown={this.keyDown}
+        />
+        <input
+          type="text"
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          value={sec}
+          onChange={this.changeSec}
+          onKeyDown={this.keyDown}
         />
       </form>
     )

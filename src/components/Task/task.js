@@ -11,6 +11,8 @@ export default class Task extends Component {
     this.state = {
       edit: false,
       text: '',
+      sec: 0,
+      timerOn: false,
     }
 
     this.editClick = () => {
@@ -38,12 +40,50 @@ export default class Task extends Component {
         text: '',
       })
     }
+
+    this.timerUpdate = () => {
+      const { sec } = this.state
+      this.setState({
+        sec: sec + 1,
+      })
+    }
+
+    this.pause = () => {
+      const { timerOn } = this.state
+      if (!timerOn) return
+      this.setState({
+        timerOn: false,
+      })
+      clearInterval(this.timerInterval)
+    }
+
+    this.play = () => {
+      const { timerOn } = this.state
+      if (timerOn) return
+      this.setState({
+        timerOn: true,
+      })
+      this.timerInterval = setInterval(this.timerUpdate, 1000)
+    }
+  }
+
+  componentDidMount() {
+    const { timer } = this.props
+    this.setState({
+      sec: timer,
+      timerOn: true,
+    })
+    this.timerInterval = setInterval(this.timerUpdate, 1000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerInterval)
   }
 
   render() {
-    const { time, description, done, hidden, deleteTask, toggleDone, id } = this.props
+    const { createTime, description, done, hidden, deleteTask, toggleDone, id } = this.props
     let status = ''
-    const { edit, text } = this.state
+    const { edit, text, sec } = this.state
 
     if (done) {
       status = 'completed'
@@ -68,8 +108,23 @@ export default class Task extends Component {
             checked={done}
           />
           <label htmlFor={id}>
-            <span className="description">{description}</span>
-            <span className="created">{formatDistanceToNow(time, { includeSeconds: true })}</span>
+            <span className="title">{description}</span>
+            <span className="description">
+              <button
+                type="button"
+                aria-label="play"
+                className="icon icon-play"
+                onClick={this.play}
+              />
+              <button
+                type="button"
+                aria-label="pause"
+                className="icon icon-pause"
+                onClick={this.pause}
+              />
+              {` ${Math.floor(sec / 60)}:${sec % 60}`}
+            </span>
+            <span className="description">{formatDistanceToNow(createTime, { includeSeconds: true })}</span>
           </label>
           <button
             type="button"
@@ -108,7 +163,7 @@ Task.defaultProps = {
 }
 
 Task.propTypes = {
-  time: PropTypes.number.isRequired,
+  createTime: PropTypes.number.isRequired,
   description: PropTypes.string.isRequired,
   done: PropTypes.bool,
   hidden: PropTypes.bool,

@@ -9,10 +9,11 @@ function TaskList(props) {
     <Task
       description={taskData.description}
       done={taskData.done}
-      time={taskData.time}
+      createTime={taskData.createTime}
       hidden={taskData.hidden}
       id={taskData.id}
       key={taskData.id}
+      timer={taskData.timer}
       deleteTask={() => deleteTask(taskData.id)}
       toggleDone={() => toggleDone(taskData.id)}
       editTask={editTask}

@@ -26,14 +26,15 @@ class App extends Component {
       })
     }
 
-    this.addTask = (text) => {
+    this.addTask = (text, time) => {
       this.setState(({ data }) => {
         const newTask = {
           description: text,
           done: false,
-          time: Date.now(),
+          createTime: Date.now(),
           hidden: false,
           id: this.idCounter,
+          timer: time,
         }
         this.idCounter += 1
         return {
