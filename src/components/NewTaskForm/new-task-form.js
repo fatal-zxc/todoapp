@@ -9,8 +9,8 @@ export default class NewTaskForm extends Component {
 
     this.state = {
       text: '',
-      min: 0,
-      sec: 0,
+      min: '',
+      sec: '',
     }
 
     this.changeText = (e) => {
@@ -43,13 +43,13 @@ export default class NewTaskForm extends Component {
       e.preventDefault()
       const { text, min, sec } = this.state
       const { addTask } = this.props
-      const timer = min * 60 + sec
+      const timer = Number(min) * 60 + Number(sec)
       if (text.trim() === '') return
       addTask(text, timer)
       this.setState({
         text: '',
-        min: 0,
-        sec: 0,
+        min: '',
+        sec: '',
       })
     }
   }
