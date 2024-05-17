@@ -15,8 +15,27 @@ export default class Task extends Component {
       timerOn: false,
     }
 
+    this.clickOutside = (e) => {
+      if (e.target !== this.editRef) {
+        this.setState({
+          edit: false,
+        })
+        document.removeEventListener('mousedown', this.clickOutside)
+      }
+    }
+
+    this.editEsc = (e) => {
+      if (e.key === 'Escape') {
+        this.setState({
+          edit: false,
+        })
+        document.removeEventListener('mousedown', this.clickOutside)
+      }
+    }
+
     this.editClick = () => {
       const { description } = this.props
+      document.addEventListener('mousedown', this.clickOutside)
       this.setState({
         edit: true,
         text: description,
@@ -39,6 +58,7 @@ export default class Task extends Component {
         edit: false,
         text: '',
       })
+      document.removeEventListener('mousedown', this.clickOutside)
     }
 
     this.timerUpdate = () => {
@@ -142,9 +162,13 @@ export default class Task extends Component {
         {status === 'editing' ? (
           <form onSubmit={this.editTaskWrap}>
             <input
+              ref={(editRef) => {
+                this.editRef = editRef
+              }}
               type="text"
               className="edit"
               onChange={this.editChange}
+              onKeyDown={this.editEsc}
               value={text}
             />
           </form>

@@ -8,16 +8,12 @@ export default class TaskFilter extends Component {
     super()
 
     this.state = {
-      all: 'selected',
-      active: '',
-      completed: '',
+      mode: 'all',
     }
 
     this.filterAllWrap = () => {
       this.setState({
-        all: 'selected',
-        active: '',
-        completed: '',
+        mode: 'all',
       })
       const { filterAll } = this.props
       filterAll()
@@ -25,9 +21,7 @@ export default class TaskFilter extends Component {
 
     this.filterActiveWrap = () => {
       this.setState({
-        all: '',
-        active: 'selected',
-        completed: '',
+        mode: 'active',
       })
       const { filterActive } = this.props
       filterActive()
@@ -35,9 +29,7 @@ export default class TaskFilter extends Component {
 
     this.filterCompletedWrap = () => {
       this.setState({
-        all: '',
-        active: '',
-        completed: 'selected',
+        mode: 'completed',
       })
       const { filterCompleted } = this.props
       filterCompleted()
@@ -45,13 +37,13 @@ export default class TaskFilter extends Component {
   }
 
   render() {
-    const { all, active, completed } = this.state
+    const { mode } = this.state
     return (
       <ul className="filters">
         <li>
           <button
             type="button"
-            className={all}
+            className={mode === 'all' ? 'selected' : null}
             onClick={this.filterAllWrap}
           >
             All
@@ -60,7 +52,7 @@ export default class TaskFilter extends Component {
         <li>
           <button
             type="button"
-            className={active}
+            className={mode === 'active' ? 'selected' : null}
             onClick={this.filterActiveWrap}
           >
             Active
@@ -69,7 +61,7 @@ export default class TaskFilter extends Component {
         <li>
           <button
             type="button"
-            className={completed}
+            className={mode === 'completed' ? 'selected' : null}
             onClick={this.filterCompletedWrap}
           >
             Completed
