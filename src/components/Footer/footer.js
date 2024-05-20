@@ -3,8 +3,7 @@ import PropTypes from 'prop-types'
 import './footer.css'
 import TaskFilter from '../TasksFilter'
 
-function Footer(props) {
-  const { todoCount, filterAll, filterActive, filterCompleted, clearCompleted } = props
+export default function Footer({ todoCount, filterAll, filterActive, filterCompleted, clearCompleted }) {
   return (
     <footer className="footer">
       <span className="todo-count">{todoCount} items left</span>
@@ -24,20 +23,10 @@ function Footer(props) {
   )
 }
 
-Footer.defaultProps = {
-  todoCount: 0,
-  filterAll: () => {},
-  filterActive: () => {},
-  filterCompleted: () => {},
-  clearCompleted: () => {},
-}
-
 Footer.propTypes = {
-  todoCount: PropTypes.number,
-  filterAll: PropTypes.func,
-  filterActive: PropTypes.func,
-  filterCompleted: PropTypes.func,
-  clearCompleted: PropTypes.func,
+  todoCount: PropTypes.number.isRequired,
+  filterAll: PropTypes.func.isRequired,
+  filterActive: PropTypes.func.isRequired,
+  filterCompleted: PropTypes.func.isRequired,
+  clearCompleted: PropTypes.func.isRequired,
 }
-
-export default Footer

@@ -1,157 +1,117 @@
-import { Component } from 'react'
+import { useState } from 'react'
 
 import './app.css'
 import Footer from '../Footer'
 import TaskList from '../TaskList'
 import NewTaskForm from '../NewTaskForm'
 
-export default class App extends Component {
-  constructor() {
-    super()
+export default function App() {
+  const [data, setData] = useState([])
+  const [mode, setMode] = useState('all')
+  const [idCounter, setIdCounter] = useState(0)
 
-    this.state = {
-      data: [],
-      mode: 'all',
+  const deleteTask = (id) => {
+    const idx = data.findIndex((el) => el.id === id)
+    setData([...data.slice(0, idx), ...data.slice(idx + 1)])
+  }
+
+  const addTask = (text, time) => {
+    const newTask = {
+      description: text,
+      done: false,
+      createTime: Date.now(),
+      hidden: false,
+      id: idCounter,
+      timer: time,
     }
+    setIdCounter((prevIdCounter) => prevIdCounter + 1)
+    setData([...data, newTask])
+  }
 
-    this.idCounter = 0
+  const filterAll = () => {
+    const newData = []
+    data.forEach((el) => newData.push({ ...el, hidden: false }))
+    setData(newData)
+    setMode('all')
+  }
 
-    this.deleteTask = (id) => {
-      this.setState(({ data }) => {
-        const idx = data.findIndex((el) => el.id === id)
-        return {
-          data: [...data.slice(0, idx), ...data.slice(idx + 1)],
-        }
-      })
-    }
-
-    this.addTask = (text, time) => {
-      this.setState(({ data }) => {
-        const newTask = {
-          description: text,
-          done: false,
-          createTime: Date.now(),
-          hidden: false,
-          id: this.idCounter,
-          timer: time,
-        }
-        this.idCounter += 1
-        return {
-          data: [...data, newTask],
-        }
-      })
-    }
-
-    this.editTask = (id, text) => {
-      this.setState(({ data }) => {
-        const idx = data.findIndex((el) => el.id === id)
-        const newTask = { ...data[idx], description: text }
-        return {
-          data: [...data.slice(0, idx), newTask, ...data.slice(idx + 1)],
-        }
-      })
-    }
-
-    this.toggleDone = (id) => {
-      const { mode } = this.state
-      this.setState(({ data }) => {
-        const idx = data.findIndex((el) => el.id === id)
-        const newTask = { ...data[idx], done: !data[idx].done }
-        return {
-          data: [...data.slice(0, idx), newTask, ...data.slice(idx + 1)],
-        }
-      })
-      if (mode === 'active') {
-        this.filterActive()
+  const filterActive = () => {
+    filterAll()
+    const newData = []
+    data.forEach((el) => {
+      if (el.done) {
+        newData.push({ ...el, hidden: true })
+      } else {
+        newData.push({ ...el })
       }
-      if (mode === 'completed') {
-        this.filterCompleted()
+    })
+    setData(newData)
+    setMode('active')
+  }
+
+  const filterCompleted = () => {
+    filterAll()
+    const newData = []
+    data.forEach((el) => {
+      if (!el.done) {
+        newData.push({ ...el, hidden: true })
+      } else {
+        newData.push({ ...el })
       }
-    }
+    })
+    setData(newData)
+    setMode('completed')
+  }
 
-    this.filterAll = () => {
-      this.setState(({ data }) => {
-        const newData = []
-        data.forEach((el) => newData.push({ ...el, hidden: false }))
-        return {
-          data: newData,
-          mode: 'all',
-        }
-      })
-    }
+  const editTask = (id, text) => {
+    const idx = data.findIndex((el) => el.id === id)
+    const newTask = { ...data[idx], description: text }
+    setData([...data.slice(0, idx), newTask, ...data.slice(idx + 1)])
+  }
 
-    this.filterActive = () => {
-      this.filterAll()
-      this.setState(({ data }) => {
-        const newData = []
-        data.forEach((el) => {
-          if (el.done) {
-            newData.push({ ...el, hidden: true })
-          } else {
-            newData.push({ ...el })
-          }
-        })
-        return {
-          data: newData,
-          mode: 'active',
-        }
-      })
+  const toggleDone = (id) => {
+    const idx = data.findIndex((el) => el.id === id)
+    const newTask = { ...data[idx], done: !data[idx].done }
+    setData([...data.slice(0, idx), newTask, ...data.slice(idx + 1)])
+    if (mode === 'active') {
+      filterActive()
     }
-
-    this.filterCompleted = () => {
-      this.filterAll()
-      this.setState(({ data }) => {
-        const newData = []
-        data.forEach((el) => {
-          if (!el.done) {
-            newData.push({ ...el, hidden: true })
-          } else {
-            newData.push({ ...el })
-          }
-        })
-        return {
-          data: newData,
-          mode: 'completed',
-        }
-      })
-    }
-
-    this.clearCompleted = () => {
-      const { data } = this.state
-      data.forEach((task) => {
-        if (task.done) {
-          this.deleteTask(task.id)
-        }
-      })
+    if (mode === 'completed') {
+      filterCompleted()
     }
   }
 
-  render() {
-    const { data } = this.state
-    const todoCount = data.filter((el) => !el.done).length
+  const clearCompleted = () => {
+    const newData = []
+    data.forEach((el) => {
+      if (!el.done) newData.push(el)
+    })
+    setData(newData)
+  }
 
-    return (
-      <section className="todoapp">
-        <header className="header">
-          <h1>todos</h1>
-          <NewTaskForm addTask={this.addTask} />
-        </header>
-        <section className="main">
-          <TaskList
-            todos={data}
-            deleteTask={this.deleteTask}
-            toggleDone={this.toggleDone}
-            editTask={this.editTask}
-          />
-          <Footer
-            todoCount={todoCount}
-            filterAll={this.filterAll}
-            filterActive={this.filterActive}
-            filterCompleted={this.filterCompleted}
-            clearCompleted={this.clearCompleted}
-          />
-        </section>
+  const todoCount = data.filter((el) => !el.done).length
+
+  return (
+    <section className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <NewTaskForm addTask={addTask} />
+      </header>
+      <section className="main">
+        <TaskList
+          todos={data}
+          deleteTask={deleteTask}
+          toggleDone={toggleDone}
+          editTask={editTask}
+        />
+        <Footer
+          todoCount={todoCount}
+          filterAll={filterAll}
+          filterActive={filterActive}
+          filterCompleted={filterCompleted}
+          clearCompleted={clearCompleted}
+        />
       </section>
-    )
-  }
+    </section>
+  )
 }

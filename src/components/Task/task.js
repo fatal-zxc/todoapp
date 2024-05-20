@@ -1,197 +1,152 @@
-import { Component } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { formatDistanceToNow } from 'date-fns'
 
 import './task.css'
 
-export default class Task extends Component {
-  constructor() {
-    super()
+export default function Task({ createTime, description, done, hidden, deleteTask, toggleDone, id, editTask, timer }) {
+  const [edit, setEdit] = useState(false)
+  const [text, setText] = useState('')
+  const [sec, setSec] = useState(timer)
+  const [timerOn, setTimerOn] = useState(true)
 
-    this.state = {
-      edit: false,
-      text: '',
-      sec: 0,
-      timerOn: false,
-    }
+  const editRef = useRef(null)
 
-    this.clickOutside = (e) => {
-      if (e.target !== this.editRef) {
-        this.setState({
-          edit: false,
-        })
-        document.removeEventListener('mousedown', this.clickOutside)
-      }
-    }
-
-    this.editEsc = (e) => {
-      if (e.key === 'Escape') {
-        this.setState({
-          edit: false,
-        })
-        document.removeEventListener('mousedown', this.clickOutside)
-      }
-    }
-
-    this.editClick = () => {
-      const { description } = this.props
-      document.addEventListener('mousedown', this.clickOutside)
-      this.setState({
-        edit: true,
-        text: description,
-      })
-    }
-
-    this.editChange = (e) => {
-      this.setState({
-        text: e.target.value,
-      })
-    }
-
-    this.editTaskWrap = (e) => {
-      e.preventDefault()
-      const { text } = this.state
-      if (text.trim() === '') return
-      const { editTask, id } = this.props
-      editTask(id, text)
-      this.setState({
-        edit: false,
-        text: '',
-      })
-      document.removeEventListener('mousedown', this.clickOutside)
-    }
-
-    this.timerUpdate = () => {
-      const { sec } = this.state
-      this.setState({
-        sec: sec + 1,
-      })
-    }
-
-    this.pause = () => {
-      const { timerOn } = this.state
-      if (!timerOn) return
-      this.setState({
-        timerOn: false,
-      })
-      clearInterval(this.timerInterval)
-    }
-
-    this.play = () => {
-      const { timerOn } = this.state
-      if (timerOn) return
-      this.setState({
-        timerOn: true,
-      })
-      this.timerInterval = setInterval(this.timerUpdate, 1000)
+  const clickOutside = (e) => {
+    if (e.target !== editRef.current) {
+      setEdit(false)
+      document.removeEventListener('mousedown', clickOutside)
     }
   }
 
-  componentDidMount() {
-    const { timer } = this.props
-    this.setState({
-      sec: timer,
-      timerOn: true,
-    })
-    this.timerInterval = setInterval(this.timerUpdate, 1000)
+  const editEsc = (e) => {
+    if (e.key === 'Escape') {
+      setEdit(false)
+      document.removeEventListener('mousedown', clickOutside)
+    }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.timerInterval)
+  const editClick = () => {
+    document.addEventListener('mousedown', clickOutside)
+    setEdit(true)
+    setText(description)
   }
 
-  render() {
-    const { createTime, description, done, hidden, deleteTask, toggleDone, id } = this.props
-    let status = ''
-    const { edit, text, sec } = this.state
+  const editChange = (e) => {
+    setText(e.target.value)
+  }
 
-    if (done) {
-      status = 'completed'
+  const editTaskWrap = (e) => {
+    e.preventDefault()
+    if (text.trim() === '') return
+    editTask(id, text)
+    setEdit(false)
+    setText('')
+    document.removeEventListener('mousedown', clickOutside)
+  }
+
+  const timerUpdate = () => {
+    setSec((prevSec) => prevSec + 1)
+  }
+
+  const pause = () => {
+    if (!timerOn) return
+    setTimerOn(false)
+  }
+
+  const play = () => {
+    if (timerOn) return
+    setTimerOn(true)
+  }
+
+  useEffect(() => {
+    let timerInterval
+    if (timerOn) {
+      timerInterval = setInterval(timerUpdate, 1000)
+    } else {
+      clearInterval(timerInterval)
     }
+    return () => clearInterval(timerInterval)
+  }, [timerOn, sec])
 
-    if (edit) {
-      status = 'editing'
-    }
+  let status = ''
 
-    if (hidden) {
-      status += ' hidden'
-    }
+  if (done) {
+    status = 'completed'
+  }
 
-    return (
-      <li className={status}>
-        <div className="view">
-          <input
-            id={id}
-            className="toggle"
-            type="checkbox"
-            onChange={toggleDone}
-            checked={done}
-          />
-          <label htmlFor={id}>
-            <span className="title">{description}</span>
-            <span className="description">
-              <button
-                type="button"
-                aria-label="play"
-                className="icon icon-play"
-                onClick={this.play}
-              />
-              <button
-                type="button"
-                aria-label="pause"
-                className="icon icon-pause"
-                onClick={this.pause}
-              />
-              {` ${Math.floor(sec / 60)}:${sec % 60}`}
-            </span>
-            <span className="description">{formatDistanceToNow(createTime, { includeSeconds: true })}</span>
-          </label>
-          <button
-            type="button"
-            className="icon icon-edit"
-            onClick={this.editClick}
-            aria-label="edit"
-          />
-          <button
-            type="button"
-            className="icon icon-destroy"
-            onClick={deleteTask}
-            aria-label="destroy"
-          />
-        </div>
-        {status === 'editing' ? (
-          <form onSubmit={this.editTaskWrap}>
-            <input
-              ref={(editRef) => {
-                this.editRef = editRef
-              }}
-              type="text"
-              className="edit"
-              onChange={this.editChange}
-              onKeyDown={this.editEsc}
-              value={text}
+  if (edit) {
+    status = 'editing'
+  }
+
+  if (hidden) {
+    status += ' hidden'
+  }
+
+  return (
+    <li className={status}>
+      <div className="view">
+        <input
+          id={id}
+          className="toggle"
+          type="checkbox"
+          onChange={toggleDone}
+          checked={done}
+        />
+        <label htmlFor={id}>
+          <span className="title">{description}</span>
+          <span className="description">
+            <button
+              type="button"
+              aria-label="play"
+              className="icon icon-play"
+              onClick={play}
             />
-          </form>
-        ) : null}
-      </li>
-    )
-  }
-}
-
-Task.defaultProps = {
-  done: false,
-  hidden: false,
-  deleteTask: () => {},
-  toggleDone: () => {},
-  editTask: () => {},
+            <button
+              type="button"
+              aria-label="pause"
+              className="icon icon-pause"
+              onClick={pause}
+            />
+            {` ${Math.floor(sec / 60)}:${sec % 60}`}
+          </span>
+          <span className="description">{formatDistanceToNow(createTime, { includeSeconds: true })}</span>
+        </label>
+        <button
+          type="button"
+          className="icon icon-edit"
+          onClick={editClick}
+          aria-label="edit"
+        />
+        <button
+          type="button"
+          className="icon icon-destroy"
+          onClick={deleteTask}
+          aria-label="destroy"
+        />
+      </div>
+      {status === 'editing' ? (
+        <form onSubmit={editTaskWrap}>
+          <input
+            ref={editRef}
+            type="text"
+            className="edit"
+            onChange={editChange}
+            onKeyDown={editEsc}
+            value={text}
+          />
+        </form>
+      ) : null}
+    </li>
+  )
 }
 
 Task.propTypes = {
   createTime: PropTypes.number.isRequired,
   description: PropTypes.string.isRequired,
-  done: PropTypes.bool,
-  hidden: PropTypes.bool,
-  deleteTask: PropTypes.func,
-  toggleDone: PropTypes.func,
-  editTask: PropTypes.func,
+  done: PropTypes.bool.isRequired,
+  hidden: PropTypes.bool.isRequired,
+  deleteTask: PropTypes.func.isRequired,
+  toggleDone: PropTypes.func.isRequired,
+  editTask: PropTypes.func.isRequired,
 }
